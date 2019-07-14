@@ -3,7 +3,7 @@ package cfg
 import (
 	"testing"
 
-	// "github.com/vouch/vouch-proxy/pkg/structs"
+	// "github.com/rdeusser/oauth2-proxy/pkg/structs"
 	"github.com/stretchr/testify/assert"
 )
 

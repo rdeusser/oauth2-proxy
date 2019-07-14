@@ -9,8 +9,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/vouch/vouch-proxy/pkg/cfg"
-	"github.com/vouch/vouch-proxy/pkg/structs"
+	"github.com/rdeusser/oauth2-proxy/pkg/cfg"
+	"github.com/rdeusser/oauth2-proxy/pkg/structs"
 )
 
 var testdb = "/tmp/storage-test.db"

@@ -3,7 +3,7 @@ package response
 import (
 	"net/http"
 
-	"github.com/vouch/vouch-proxy/pkg/cfg"
+	"github.com/rdeusser/oauth2-proxy/pkg/cfg"
 )
 
 // we wrap ResponseWriter so that we can store the StatusCode

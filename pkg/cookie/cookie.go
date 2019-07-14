@@ -8,9 +8,9 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	// "github.com/vouch/vouch-proxy/pkg/structs"
-	"github.com/vouch/vouch-proxy/pkg/cfg"
-	"github.com/vouch/vouch-proxy/pkg/domains"
+	// "github.com/rdeusser/oauth2-proxy/pkg/structs"
+	"github.com/rdeusser/oauth2-proxy/pkg/cfg"
+	"github.com/rdeusser/oauth2-proxy/pkg/domains"
 )
 
 const maxCookieSize = 4000
@@ -76,7 +76,7 @@ func setCookie(w http.ResponseWriter, r *http.Request, val string, maxAge int) {
 	}
 }
 
-// Cookie get the vouch jwt cookie
+// Cookie get the oauth2 jwt cookie
 func Cookie(r *http.Request) (string, error) {
 
 	var cookieParts []string

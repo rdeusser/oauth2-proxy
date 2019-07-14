@@ -1,8 +1,8 @@
 
-# vouch config
-# bare minimum to get vouch running with google
+# oauth2 config
+# bare minimum to get oauth2 running with google
 
-vouch:
+oauth2:
   domains:
   - yourdomain.com
   - yourotherdomain.com

@@ -1,9 +1,9 @@
-vouch:
+oauth2:
   logLevel: debug
   listen: 0.0.0.0
   port: 9090
   domains:
-  - vouch.github.io
+  - oauth2.github.io
 
   whiteList:
   - bob@yourdomain.com
@@ -11,16 +11,16 @@ vouch:
   - joe@yourdomain.com
 
   cookie: 
-    name: vouchTestingCookie
+    name: oauth2TestingCookie
 
   session:
-    name: VouchTestingSession
+    name: Oauth2TestingSession
 
   db: 
-    file: /tmp/vouch-proxy-testing.db
+    file: /tmp/oauth2-proxy-testing.db
 
 oauth:
   provider: indieauth
-  client_id: http://vouch.github.io
+  client_id: http://oauth2.github.io
   auth_url: https://indielogin.com/auth
-  callback_url: http://vouch.github.io:9090/auth
+  callback_url: http://oauth2.github.io:9090/auth

@@ -4,7 +4,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/vouch/vouch-proxy/pkg/cfg"
+	"github.com/rdeusser/oauth2-proxy/pkg/cfg"
 )
 
 var domains = cfg.Cfg.Domains
@@ -28,7 +28,7 @@ func Matches(s string) string {
 	return ""
 }
 
-// IsUnderManagement check if string contains a vouch managed domain
+// IsUnderManagement check if string contains a oauth2 managed domain
 func IsUnderManagement(s string) bool {
 	match := Matches(s)
 	if match != "" {

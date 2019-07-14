@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/vouch/vouch-proxy/pkg/cfg"
-	"github.com/vouch/vouch-proxy/pkg/response"
+	"github.com/rdeusser/oauth2-proxy/pkg/cfg"
+	"github.com/rdeusser/oauth2-proxy/pkg/response"
 )
 
 var (

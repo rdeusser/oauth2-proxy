@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/boltdb/bolt"
-	"github.com/vouch/vouch-proxy/pkg/cfg"
+	"github.com/rdeusser/oauth2-proxy/pkg/cfg"
 )
 
 var (
@@ -30,7 +30,7 @@ var (
 	userBucket = []byte("users")
 	teamBucket = []byte("teams")
 	siteBucket = []byte("sites")
-	dbpath     = os.Getenv("VOUCH_ROOT") + cfg.Cfg.DB.File
+	dbpath     = os.Getenv("OAUTH2_ROOT") + cfg.Cfg.DB.File
 
 	log = cfg.Cfg.Logger
 )

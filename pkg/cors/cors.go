@@ -3,7 +3,7 @@ package cors
 import (
 	"net/http"
 
-	"github.com/vouch/vouch-proxy/pkg/cfg"
+	"github.com/rdeusser/oauth2-proxy/pkg/cfg"
 )
 
 var log = cfg.Cfg.Logger

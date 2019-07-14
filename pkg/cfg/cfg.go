@@ -20,7 +20,7 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-// config vouch jwt cookie configuration
+// config oauth2 jwt cookie configuration
 type config struct {
 	Logger        *zap.SugaredLogger
 	FastLogger    *zap.Logger
@@ -97,12 +97,12 @@ type branding struct {
 	UCName    string // upper case
 	CcName    string // camel case
 	OldLCName string // lasso
-	URL       string // https://github.com/vouch/vouch-proxy
+	URL       string // https://github.com/rdeusser/oauth2-proxy
 }
 
 var (
 	// Branding that's our name
-	Branding = branding{"vouch", "VOUCH", "Vouch", "lasso", "https://github.com/vouch/vouch-proxy"}
+	Branding = branding{"oauth2", "OAUTH2", "Oauth2", "lasso", "https://github.com/rdeusser/oauth2-proxy"}
 
 	// Cfg the main exported config variable
 	Cfg config
@@ -130,7 +130,7 @@ var (
 	// RequiredOptions must have these fields set for minimum viable config
 	RequiredOptions = []string{"oauth.provider", "oauth.client_id"}
 
-	secretFile = os.Getenv("VOUCH_ROOT") + "config/secret"
+	secretFile = os.Getenv("OAUTH2_ROOT") + "config/secret"
 
 	cmdLineConfig *string
 
@@ -224,7 +224,7 @@ func setDevelopmentLogger() {
 	log.Infof("testing: %s, using development console logger", strconv.FormatBool(Cfg.Testing))
 }
 
-// InitForTestPurposes is called by most *_testing.go files in Vouch Proxy
+// InitForTestPurposes is called by most *_testing.go files in Oauth2 Proxy
 func InitForTestPurposes() {
 	if err := os.Setenv(Branding.UCName+"_CONFIG", "../../config/test_config.yml"); err != nil {
 		log.Error(err)
@@ -339,7 +339,7 @@ func BasicTest() error {
 	}
 
 	// issue a warning if the secret is too small
-	log.Debugf("vouch.jwt.secret is %d characters long", len(Cfg.JWT.Secret))
+	log.Debugf("oauth2.jwt.secret is %d characters long", len(Cfg.JWT.Secret))
 	if len(Cfg.JWT.Secret) < minBase64Length {
 		log.Errorf("Your secret is too short! (%d characters long). Please consider deleting %s to automatically generate a secret of %d characters",
 			len(Cfg.JWT.Secret),
@@ -347,7 +347,7 @@ func BasicTest() error {
 			minBase64Length)
 	}
 
-	log.Debugf("vouch.session.key is %d characters long", len(Cfg.Session.Key))
+	log.Debugf("oauth2.session.key is %d characters long", len(Cfg.Session.Key))
 	if len(Cfg.Session.Key) < minBase64Length {
 		log.Errorf("Your session key is too short! (%d characters long). Please consider deleting %s to automatically generate a secret of %d characters",
 			len(Cfg.Session.Key),
@@ -394,7 +394,7 @@ func SetDefaults() {
 	// viper.SetDefault(Cfg.Port, 9090)
 	// viper.SetDefault("Headers.SSO", "X-"+Branding.CcName+"-Token")
 	// viper.SetDefault("Headers.Redirect", "X-"+Branding.CcName+"-Requested-URI")
-	// viper.SetDefault("Cookie.Name", "Vouch")
+	// viper.SetDefault("Cookie.Name", "Oauth2")
 
 	// logging
 	if !viper.IsSet(Branding.LCName + ".logLevel") {
@@ -552,7 +552,7 @@ func setDefaultsGitHub() {
 		GenOAuth.UserInfoURL = "https://api.github.com/user?access_token="
 	}
 	if len(GenOAuth.Scopes) == 0 {
-		// https://github.com/vouch/vouch-proxy/issues/63
+		// https://github.com/rdeusser/oauth2-proxy/issues/63
 		// https://developer.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/
 		GenOAuth.Scopes = []string{"read:user"}
 	}
@@ -583,7 +583,7 @@ func getOrGenerateJWTSecret() string {
 		log.Warn("generating random jwt.secret and storing it in " + secretFile)
 
 		// make sure to create 256 bits for the secret
-		// see https://github.com/vouch/vouch-proxy/issues/54
+		// see https://github.com/rdeusser/oauth2-proxy/issues/54
 		rstr, err := securerandom.Base64OfBytes(base64Bytes)
 		if err != nil {
 			log.Fatal(err)

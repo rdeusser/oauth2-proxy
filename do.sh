@@ -7,11 +7,11 @@ SCRIPT=$(readlink -f "$0")
 SDIR=$(dirname "$SCRIPT")
 cd $SDIR
 
-export VOUCH_ROOT=${GOPATH}/src/github.com/vouch/vouch-proxy/
+export OAUTH2_ROOT=${GOPATH}/src/github.com/rdeusser/oauth2-proxy/
 
-IMAGE=voucher/vouch-proxy
+IMAGE=oauth2er/oauth2-proxy
 GOIMAGE=golang:1.10
-NAME=vouch-proxy
+NAME=oauth2-proxy
 HTTPPORT=9090
 GODOC_PORT=5050
 
@@ -29,7 +29,7 @@ build () {
 }
 
 install () {
-  cp ./vouch-proxy ${GOPATH}/bin/vouch-proxy
+  cp ./oauth2-proxy ${GOPATH}/bin/oauth2-proxy
 }
 
 gogo () {
@@ -92,7 +92,7 @@ bug_report() {
   if [ -z "$REDACT" ]; then 
     cat <<EOF
 
-    bug_report cleans the ${CONFIG} and the Vouch Proxy logs of secrets and any additional strings (usually domains and email addresses)
+    bug_report cleans the ${CONFIG} and the Oauth2 Proxy logs of secrets and any additional strings (usually domains and email addresses)
 
     usage:
 
@@ -101,14 +101,14 @@ bug_report() {
 EOF
     exit 1;
   fi
-  echo -e "\n-------------------------\n\n#\n# redacted Vouch Proxy ${CONFIG}\n# $(date -I)\n#\n"
+  echo -e "\n-------------------------\n\n#\n# redacted Oauth2 Proxy ${CONFIG}\n# $(date -I)\n#\n"
   cat $CONFIG | _redact
 
-  echo -e "\n-------------------------\n\n#\n# redacted Vouch Proxy logs\n# $(date -I)\n#\n"
-  echo -e "# be sure to set 'vouch.testing: true' and 'vouch.logLevel: debug' in your config\n"
+  echo -e "\n-------------------------\n\n#\n# redacted Oauth2 Proxy logs\n# $(date -I)\n#\n"
+  echo -e "# be sure to set 'oauth2.testing: true' and 'oauth2.logLevel: debug' in your config\n"
 
   trap _redact_exit SIGINT
-  ./vouch-proxy 2>&1 | _redact
+  ./oauth2-proxy 2>&1 | _redact
 
 
 }
@@ -116,7 +116,7 @@ _redact_exit () {
   echo -e "\n\n-------------------------\n"
   echo -e "redact your nginx config with:\n"
   echo -e "\tcat nginx.conf | sed 's/yourdomain.com/DOMAIN.COM/g'\n"
-  echo -e "Please upload both configs and some logs to https://hastebin.com/ and open an issue on GitHub at https://github.com/vouch/vouch-proxy/issues\n"
+  echo -e "Please upload both configs and some logs to https://hastebin.com/ and open an issue on GitHub at https://github.com/rdeusser/oauth2-proxy/issues\n"
 }
 
 _redact() {
@@ -143,8 +143,8 @@ coverage() {
 }
 
 test () {
-  if [ -z "$VOUCH_CONFIG" ]; then
-    export VOUCH_CONFIG="$SDIR/config/test_config.yml"
+  if [ -z "$OAUTH2_CONFIG" ]; then
+    export OAUTH2_CONFIG="$SDIR/config/test_config.yml"
   fi
   # test all the things
   if [ -n "$*" ]; then
@@ -158,7 +158,7 @@ loc () {
   find . -name '*.go' | xargs wc -l | grep total | cut -d' ' -f2
 }
 
-DB=data/vouch_bolt.db
+DB=data/oauth2_bolt.db
 browsebolt() {
 	${GOPATH}/bin/boltbrowser $DB
 }
@@ -168,7 +168,7 @@ usage() {
    usage:
      $0 run                    - go run main.go
      $0 build                  - go build
-     $0 install                - move binary to ${GOPATH}/bin/vouch
+     $0 install                - move binary to ${GOPATH}/bin/oauth2
      $0 goget                  - get all dependencies
      $0 dbuild                 - build docker container
      $0 drun [args]            - run docker container

@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/boltdb/bolt"
-	"github.com/vouch/vouch-proxy/pkg/structs"
+	"github.com/rdeusser/oauth2-proxy/pkg/structs"
 )
 
 // PutUser inna da db

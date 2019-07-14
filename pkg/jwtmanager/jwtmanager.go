@@ -10,16 +10,16 @@ import (
 	"strings"
 	"time"
 
-	"github.com/vouch/vouch-proxy/pkg/cfg"
-	"github.com/vouch/vouch-proxy/pkg/structs"
+	"github.com/rdeusser/oauth2-proxy/pkg/cfg"
+	"github.com/rdeusser/oauth2-proxy/pkg/structs"
 
 	jwt "github.com/dgrijalva/jwt-go"
 )
 
 // const numSites = 2
 
-// VouchClaims jwt Claims specific to vouch
-type VouchClaims struct {
+// Oauth2Claims jwt Claims specific to oauth2
+type Oauth2Claims struct {
 	Username     string   `json:"username"`
 	Sites        []string `json:"sites"` // tempting to make this a map but the array is fewer characters in the jwt
 	CustomClaims map[string]interface{}
@@ -34,7 +34,7 @@ var StandardClaims jwt.StandardClaims
 // CustomClaims implementation
 var CustomClaims map[string]interface{}
 
-// Sites added to VouchClaims
+// Sites added to Oauth2Claims
 var Sites []string
 var log = cfg.Cfg.Logger
 
@@ -59,7 +59,7 @@ func populateSites() {
 func CreateUserTokenString(u structs.User, customClaims structs.CustomClaims, ptokens structs.PTokens) string {
 	// User`token`
 	// u.PrepareUserData()
-	claims := VouchClaims{
+	claims := Oauth2Claims{
 		u.Username,
 		Sites,
 		customClaims.Claims,
@@ -111,7 +111,7 @@ func TokenIsValid(token *jwt.Token, err error) bool {
 
 // SiteInToken searches does the token contain the site?
 func SiteInToken(site string, token *jwt.Token) bool {
-	if claims, ok := token.Claims.(*VouchClaims); ok {
+	if claims, ok := token.Claims.(*Oauth2Claims); ok {
 		log.Debugf("site %s claim %v", site, claims)
 		if SiteInClaims(site, claims) {
 			return true
@@ -129,8 +129,8 @@ func ParseTokenString(tokenString string) (*jwt.Token, error) {
 		log.Debugf("decompressed tokenString %s", tokenString)
 	}
 
-	return jwt.ParseWithClaims(tokenString, &VouchClaims{}, func(token *jwt.Token) (interface{}, error) {
-		// return jwt.ParseWithClaims(tokenString, &VouchClaims{}, func(token *jwt.Token) (interface{}, error) {
+	return jwt.ParseWithClaims(tokenString, &Oauth2Claims{}, func(token *jwt.Token) (interface{}, error) {
+		// return jwt.ParseWithClaims(tokenString, &Oauth2Claims{}, func(token *jwt.Token) (interface{}, error) {
 		if token.Method != jwt.GetSigningMethod("HS256") {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
 		}
@@ -141,7 +141,7 @@ func ParseTokenString(tokenString string) (*jwt.Token, error) {
 }
 
 // SiteInClaims does the claim contain the value?
-func SiteInClaims(site string, claims *VouchClaims) bool {
+func SiteInClaims(site string, claims *Oauth2Claims) bool {
 	for _, s := range claims.Sites {
 		if strings.Contains(site, s) {
 			log.Debugf("site %s is found for claims.Site %s", site, s)
@@ -152,13 +152,13 @@ func SiteInClaims(site string, claims *VouchClaims) bool {
 }
 
 // PTokenClaims get all the claims
-// TODO HERE there's something wrong with claims parsing, probably related to VouchClaims not being a pointer
-func PTokenClaims(ptoken *jwt.Token) (VouchClaims, error) {
-	// func PTokenClaims(ptoken *jwt.Token) (VouchClaims, error) {
+// TODO HERE there's something wrong with claims parsing, probably related to Oauth2Claims not being a pointer
+func PTokenClaims(ptoken *jwt.Token) (Oauth2Claims, error) {
+	// func PTokenClaims(ptoken *jwt.Token) (Oauth2Claims, error) {
 	// return ptoken.Claims, nil
 
-	// return ptoken.Claims.(*VouchClaims), nil
-	ptokenClaims, ok := ptoken.Claims.(*VouchClaims)
+	// return ptoken.Claims.(*Oauth2Claims), nil
+	ptokenClaims, ok := ptoken.Claims.(*Oauth2Claims)
 	if !ok {
 		log.Debugf("failed claims: %v %v", ptokenClaims, ptoken.Claims)
 		return *ptokenClaims, errors.New("cannot parse claims")
@@ -169,9 +169,9 @@ func PTokenClaims(ptoken *jwt.Token) (VouchClaims, error) {
 
 // PTokenToUsername returns the Username in the validated ptoken
 func PTokenToUsername(ptoken *jwt.Token) (string, error) {
-	return ptoken.Claims.(*VouchClaims).Username, nil
+	return ptoken.Claims.(*Oauth2Claims).Username, nil
 
-	// var ptokenClaims VouchClaims
+	// var ptokenClaims Oauth2Claims
 	// ptokenClaims, err := PTokenClaims(ptoken)
 	// if err != nil {
 	// 	log.Error(err)

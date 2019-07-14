@@ -20,12 +20,12 @@ import (
 	securerandom "github.com/theckman/go-securerandom"
 
 	"github.com/gorilla/sessions"
-	"github.com/vouch/vouch-proxy/pkg/cfg"
-	"github.com/vouch/vouch-proxy/pkg/cookie"
-	"github.com/vouch/vouch-proxy/pkg/domains"
-	"github.com/vouch/vouch-proxy/pkg/jwtmanager"
-	"github.com/vouch/vouch-proxy/pkg/model"
-	"github.com/vouch/vouch-proxy/pkg/structs"
+	"github.com/rdeusser/oauth2-proxy/pkg/cfg"
+	"github.com/rdeusser/oauth2-proxy/pkg/cookie"
+	"github.com/rdeusser/oauth2-proxy/pkg/domains"
+	"github.com/rdeusser/oauth2-proxy/pkg/jwtmanager"
+	"github.com/rdeusser/oauth2-proxy/pkg/model"
+	"github.com/rdeusser/oauth2-proxy/pkg/structs"
 	"golang.org/x/oauth2"
 )
 
@@ -123,8 +123,8 @@ func FindJWT(r *http.Request) string {
 }
 
 // ClaimsFromJWT parse the jwt and return the claims
-func ClaimsFromJWT(jwt string) (jwtmanager.VouchClaims, error) {
-	var claims jwtmanager.VouchClaims
+func ClaimsFromJWT(jwt string) (jwtmanager.Oauth2Claims, error) {
+	var claims jwtmanager.Oauth2Claims
 
 	jwtParsed, err := jwtmanager.ParseTokenString(jwt)
 	if err != nil {
@@ -136,7 +136,7 @@ func ClaimsFromJWT(jwt string) (jwtmanager.VouchClaims, error) {
 	claims, err = jwtmanager.PTokenClaims(jwtParsed)
 	if err != nil {
 		// claims = jwtmanager.PTokenClaims(jwtParsed)
-		// if claims == &jwtmanager.VouchClaims{} {
+		// if claims == &jwtmanager.Oauth2Claims{} {
 		return claims, err
 	}
 	log.Debugf("JWT Claims: %+v", claims)
@@ -189,7 +189,7 @@ func ValidateRequestHandler(w http.ResponseWriter, r *http.Request) {
 		if !jwtmanager.SiteInClaims(r.Host, &claims) {
 			if !cfg.Cfg.PublicAccess {
 				error401(w, r, AuthError{
-					fmt.Sprintf("http header 'Host: %s' not authorized for configured `vouch.domains` (is Host being sent properly?)", r.Host),
+					fmt.Sprintf("http header 'Host: %s' not authorized for configured `oauth2.domains` (is Host being sent properly?)", r.Host),
 					jwt})
 			} else {
 				w.Header().Add(cfg.Cfg.Headers.User, "")
@@ -348,7 +348,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	// requestedURL comes from nginx in the query string via a 302 redirect
 	// it sets the ultimate destination
-	// https://vouch.yoursite.com/login?url=
+	// https://oauth2.yoursite.com/login?url=
 	var requestedURL = r.URL.Query().Get("url")
 	if requestedURL == "" {
 		renderIndex(w, "/login no destination URL requested")
@@ -375,8 +375,8 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if failcount > 2 {
-		var vouchError = r.URL.Query().Get("error")
-		renderIndex(w, "/login too many redirects for "+requestedURL+" - "+vouchError)
+		var oauth2Error = r.URL.Query().Get("error")
+		renderIndex(w, "/login too many redirects for "+requestedURL+" - "+oauth2Error)
 	} else {
 		// bounce to oauth provider for login
 		var lURL = loginURL(r, state)
@@ -421,7 +421,7 @@ func VerifyUser(u interface{}) (ok bool, err error) {
 	} else if len(cfg.Cfg.Domains) != 0 && !domains.IsUnderManagement(user.Email) {
 		err = fmt.Errorf("Email %s is not within a "+cfg.Branding.CcName+" managed domain", user.Email)
 		// } else if !domains.IsUnderManagement(user.HostDomain) {
-		// 	err = fmt.Errorf("HostDomain %s is not within a vouch managed domain", u.HostDomain)
+		// 	err = fmt.Errorf("HostDomain %s is not within a oauth2 managed domain", u.HostDomain)
 	} else {
 		ok = true
 		log.Debug("no domains configured")
@@ -784,7 +784,7 @@ func getUserInfoFromADFS(r *http.Request, user *structs.User, customClaims *stru
 func error401(w http.ResponseWriter, r *http.Request, ae AuthError) {
 	log.Error(ae.Error)
 	cookie.ClearCookie(w, r)
-	// w.Header().Set("X-Vouch-Error", ae.Error)
+	// w.Header().Set("X-Oauth2-Error", ae.Error)
 	http.Error(w, ae.Error, http.StatusUnauthorized)
 	// TODO put this back in place if multiple auth mechanism are available
 	// c.HTML(http.StatusBadRequest, "error.tmpl", gin.H{"message": errStr})

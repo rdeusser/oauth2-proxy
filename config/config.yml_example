@@ -1,11 +1,11 @@
-# vouch config
+# oauth2 config
 
 # you should probably start with one of the other configs in the example directory
-# vouch proxy does a fairly good job of setting its config to sane defaults
+# oauth2 proxy does a fairly good job of setting its config to sane defaults
 
-# be aware of your indentation, the only top level elements are `vouch` and `oauth`. 
+# be aware of your indentation, the only top level elements are `oauth2` and `oauth`. 
 
-vouch:
+oauth2:
   # logLevel: debug
   logLevel: info
 
@@ -17,7 +17,7 @@ vouch:
   port: 9090
 
   # domains -
-  # each of these domains must serve the url https://vouch.$domains[0] https://vouch.$domains[1] ...
+  # each of these domains must serve the url https://oauth2.$domains[0] https://oauth2.$domains[1] ...
   # so that the cookie which stores the JWT can be set in the relevant domain
   # you usually *don't* want to list every individual website that will be protected
   # if you have siteA.internal.yourdomain.com and siteB.internal.yourdomain.com 
@@ -28,12 +28,12 @@ vouch:
   - yourdomain.com
   - yourotherdomain.com
 
-  # set allowAllUsers: true to use Vouch Proxy to just accept anyone who can authenticate at the configured provider
+  # set allowAllUsers: true to use Oauth2 Proxy to just accept anyone who can authenticate at the configured provider
   # allowAllUsers: false
 
   # Setting publicAccess: true will accept all requests, even without a cookie. 
   # If the user is logged in, the cookie will be validated and the user header will be set.
-  # You will need to direct people to the Vouch Proxy login page from your application.
+  # You will need to direct people to the Oauth2 Proxy login page from your application.
   # publicAccess: false
 
   # whiteList - (optional) allows only the listed usernames
@@ -45,14 +45,14 @@ vouch:
 
   jwt:
     # secret - a random string used to cryptographically sign the jwt
-    # Vouch Proxy complains if the string is less than 44 characters (256 bits as 32 base64 bytes)
+    # Oauth2 Proxy complains if the string is less than 44 characters (256 bits as 32 base64 bytes)
     # if the secret is not set here then..
     # look for the secret in `./config/secret`
     # if `./config/secret` doesn't exist then randomly generate a secret and store it there
-    # in order to run multiple instances of vouch on multiple servers (perhaps purely for validating the jwt),
+    # in order to run multiple instances of oauth2 on multiple servers (perhaps purely for validating the jwt),
     # you'll want them all to have the same secret
     secret: your_random_string
-    issuer: Vouch
+    issuer: Oauth2
     # number of minutes until jwt expires
     maxAge: 240
     # compress the jwt
@@ -60,7 +60,7 @@ vouch:
 
   cookie: 
     # name of cookie to store the jwt
-    name: VouchCookie
+    name: Oauth2Cookie
     # optionally force the domain of the cookie to set
     # domain: yourdomain.com
     secure: true
@@ -70,22 +70,22 @@ vouch:
 
   session:
     # name of session variable stored locally
-    name: VouchSession
+    name: Oauth2Session
     # key - a cryptographic string used to store the session variable
     # if the key is not set here then it is generated at startup and stored in memory
-    # Vouch Proxy complains if the string is less than 44 characters (256 bits as 32 base64 bytes)
-    # you only want to set this if you're running multiple user facing vouch.yourdomain.com instances
+    # Oauth2 Proxy complains if the string is less than 44 characters (256 bits as 32 base64 bytes)
+    # you only want to set this if you're running multiple user facing oauth2.yourdomain.com instances
     key: you_random_key
 
 
   headers:
-    jwt: X-Vouch-Token
+    jwt: X-Oauth2-Token
     querystring: access_token
-    redirect: X-Vouch-Requested-URI
+    redirect: X-Oauth2-Requested-URI
 
     # GENERAL WARNING ABOUT claims AND tokens
     # all of these config elements can cause performance impacts due to the amount of information being 
-    # moved around.  They will get added to the Vouch cookie and (possibly) make it large.  The Vouch cookie will 
+    # moved around.  They will get added to the Oauth2 cookie and (possibly) make it large.  The Oauth2 cookie will 
     # get split up into several cookies. Every request will process the cookies in order to extract and create the 
     # additional headers which get returned.  But if you need it, you need it.
     # With large cookies and headers it will require additional nginx config to open up the buffers a bit..
@@ -93,31 +93,31 @@ vouch:
     # and `proxy_buffer_size` http://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_buffer_size
 
     # claims - a list of claims that will be stored in the JWT and passed down to applications via headers
-    # By default claims are sent down as headers with a prefix of X-Vouch-IdP-Claims-ClaimKey
+    # By default claims are sent down as headers with a prefix of X-Oauth2-IdP-Claims-ClaimKey
     # Only when a claim is found in the user's info will the header exist.  This is optional.  These are case sensitive.
     claims:
       - groups
       - given_name
     # these will result in two headers being passed back to nginx
-    # X-Vouch-IdP-Claims-groups
-    # X-Vouch-IdP-Claims-given_name
+    # X-Oauth2-IdP-Claims-groups
+    # X-Oauth2-IdP-Claims-given_name
       
-    # claimheader - Customizable claim header prefix (instead of default `X-Vouch-IdP-Claims-`) 
+    # claimheader - Customizable claim header prefix (instead of default `X-Oauth2-IdP-Claims-`) 
     # claimheader: My-Custom-Claim-Prefix
 
     # accesstoken - Pass the user's access token from the provider.  This is useful if you need to pass the IdP token to a downstream
     # application. This is optional.
-    # accesstoken: X-Vouch-IdP-AccessToken
+    # accesstoken: X-Oauth2-IdP-AccessToken
     # idtoken - Pass the user's Id token from the provider.  This is useful if you need to pass this token to a downstream
     # application. This is optional.
-    # idtoken: X-Vouch-IdP-IdToken
+    # idtoken: X-Oauth2-IdP-IdToken
 
   db: 
-    file: data/vouch_bolt.db
+    file: data/oauth2_bolt.db
 
-  # test_url - add this URL to the page which vouch displays
+  # test_url - add this URL to the page which oauth2 displays
   test_url: http://yourdomain.com
-  # webapp - WIP for web interface to vouch (mostly logs)
+  # webapp - WIP for web interface to oauth2 (mostly logs)
   # webapp: true
 
 #
@@ -133,8 +133,8 @@ oauth:
   client_id: 
   client_secret: 
   callback_urls:
-    - http://vouch.yourdomain.com:9090/auth
-    - http://vouch.yourotherdomain.com:9090/auth
+    - http://oauth2.yourdomain.com:9090/auth
+    - http://oauth2.yourotherdomain.com:9090/auth
   preferredDomain: yourdomain.com
 
   # GitHub
@@ -143,7 +143,7 @@ oauth:
   client_id:
   client_secret:
   # callback_url is configured at github.com when setting up the app
-  # set to e.g. https://vouch.yourdomain.com/auth
+  # set to e.g. https://oauth2.yourdomain.com/auth
   # defaults (uncomment and change these if you are using github enterprise on-prem)
   # auth_url: https://github.com/login/oauth/authorize
   # token_url: https://github.com/login/oauth/access_token
@@ -162,12 +162,12 @@ oauth:
     - openid
     - email
     - profile
-  callback_url: http://vouch.yourdomain.com:9090/auth
+  callback_url: http://oauth2.yourdomain.com:9090/auth
 
   # IndieAuth
   # https://indielogin.com/api
   provider: indieauth
   client_id: http://yourdomain.com
   auth_url: https://indielogin.com/auth
-  callback_url: http://vouch.yourdomain.com:9090/auth
+  callback_url: http://oauth2.yourdomain.com:9090/auth
   

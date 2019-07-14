@@ -1,7 +1,7 @@
 package main
 
-// vouch
-// github.com/vouch/vouch-proxy
+// oauth2
+// github.com/rdeusser/oauth2-proxy
 
 import (
 	"log"
@@ -13,10 +13,10 @@ import (
 	"github.com/gorilla/mux"
 	"go.uber.org/zap"
 
-	"github.com/vouch/vouch-proxy/handlers"
-	"github.com/vouch/vouch-proxy/pkg/cfg"
-	"github.com/vouch/vouch-proxy/pkg/timelog"
-	tran "github.com/vouch/vouch-proxy/pkg/transciever"
+	"github.com/rdeusser/oauth2-proxy/handlers"
+	"github.com/rdeusser/oauth2-proxy/pkg/cfg"
+	"github.com/rdeusser/oauth2-proxy/pkg/timelog"
+	tran "github.com/rdeusser/oauth2-proxy/pkg/transciever"
 )
 
 // version and semver get overwritten by build with
